@@ -1,0 +1,23 @@
+{
+  "name": "living-lab-web",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@tds/core-box": "^1.0.1",
+    "@tds/core-button": "^1.0.1",
+    "@tds/core-css-reset": "^1.1.0",
+    "@tds/core-flex-grid": "^2.0.0",
+    "@tds/core-input": "^1.0.5",
+    "@tds/core-paragraph": "^1.0.0",
+    "axios": "^0.18.0",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
