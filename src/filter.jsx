@@ -1,35 +1,48 @@
 import React from 'react';
-import Input from '@tds/core-input';
 import Box from '@tds/core-box';
+import Select from '@tds/core-select';
+
+import Bandwidth from './bandwidth';
+import Jitter from './jitter';
+import Latency from './latency';
+import Ping from './ping';
 
 class Filter extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
+      test_type: "bandwidth",
     };
   }
 
   render() {
     return (
-      <Box between={2}>
-        <Input label="NanoPi ID" />
-        <Input label="Upload Date Month (Exact)" />
-        <Input label="Upload Date Month Less Than" />
-        <Input label="Upload Date Month Greater Than" />
-        <Input label="Upload Date Day (Exact)" />
-        <Input label="Upload Date Day Less Than" />
-        <Input label="Upload Date Day Greater Than" />
-        <Input label="Upload Date Hour (Exact)" />
-        <Input label="Upload Date Hour Less Than" />
-        <Input label="Upload Date Hour Greater Than" />
-        <Input label="Upload Date Minute (Exact)" />
-        <Input label="Upload Date Minute Less Than" />
-        <Input label="Upload Date Minute Greater Than" />
-        <Input label="Bandwidth (Exact)" />
-        <Input label="Bandwidth Less Than" />
-        <Input label="Bandwidth Greater Than" />
+      <Box inset={1} between={2}>
+        <Select
+          label="Test Type"
+          placeholder="Select test type..."
+          value={this.state.test_type}
+          options={[
+            { text: 'Bandwidth', value: 'bandwidth' },
+            { text: 'Jitter', value: 'jitter' },
+            { text: 'One-Way Latency', value: 'sockperf' },
+            { text: 'Ping', value: 'ping' },
+          ]}
+          onChange={ (event) => { this.setState({test_type: event.target.value}); }}
+        />
+        { this.state.test_type === 'bandwidth' &&
+            <Bandwidth />
+        }
+        { this.state.test_type === 'jitter' &&
+            <Jitter />
+        }
+        { this.state.test_type === 'sockperf' &&
+            <Latency />
+        }
+        { this.state.test_type === 'ping' &&
+            <Ping />
+        }
       </Box>
     );
   }

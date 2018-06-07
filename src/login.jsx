@@ -1,7 +1,6 @@
 import React from 'react';
 import Input from '@tds/core-input';
 import Box from '@tds/core-box';
-import Button from '@tds/core-button';
 import FlexGrid from '@tds/core-flex-grid';
 
 class Login extends React.Component {
@@ -17,12 +16,14 @@ class Login extends React.Component {
   }
 
   updateUsername(event) {
-    this.setState({
-      username: event.target.value,
-    });
+    this.props.updateCredentials(event.target.value, this.state.password);
+    //    this.setState({
+    //      username: event.target.value,
+    //    });
   }
 
   updatePassword(event) {
+    this.props.updateCredentials(this.state.username, event.target.value);
     this.setState({
       password: event.target.value,
     });
@@ -31,33 +32,34 @@ class Login extends React.Component {
   render() {
     return (
       <div>
-        <FlexGrid>
-          <FlexGrid.Row>
-            <FlexGrid.Col lg={3}>
-            </FlexGrid.Col>
-            <FlexGrid.Col>
-              <Box inset={8} between={3}>
+        <Box horizontal={1} vertical={3}>
+          <FlexGrid>
+            <FlexGrid.Row>
+              <FlexGrid.Col>
                 <Input
                   label="Username"
-                  value={this.state.username}
-                  onChange={this.updateUsername}/>
+                  value={this.props.username}
+                  onChange={this.updateUsername}
+                />
+              </FlexGrid.Col>
+              <FlexGrid.Col>
                 <Input
                   type="password"
                   label="Password"
-                  value={this.state.password}
-                  onChange={this.updatePassword} />
-                <Button onClick={() => {
-                  this.props.updateCredentials(this.state.username, this.state.password)
-                }}>Log In</Button>
-              </Box>
-            </FlexGrid.Col>
-            <FlexGrid.Col lg={3}>
-            </FlexGrid.Col>
-          </FlexGrid.Row>
-        </FlexGrid>
+                  value={this.props.password}
+                  onChange={this.updatePassword}
+                />
+              </FlexGrid.Col>
+            </FlexGrid.Row>
+          </FlexGrid>
+        </Box>
       </div>
     );
   }
 }
 
 export default Login;
+
+//                <Button onClick={() => {
+//                  this.props.updateCredentials(this.state.username, this.state.password)
+//                }}>Log In</Button>

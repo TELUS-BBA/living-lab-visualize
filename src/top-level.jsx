@@ -1,6 +1,10 @@
 import React from 'react';
-import Display from './display';
+import FlexGrid from '@tds/core-flex-grid';
+import HairlineDivider from '@tds/core-hairline-divider';
+
 import Login from './login';
+import Filter from './filter';
+import Graph from './graph';
 
 
 class TopLevel extends React.Component {
@@ -25,16 +29,30 @@ class TopLevel extends React.Component {
   render() {
     return (
       <div>
-        { this.state.username &&
-          <Display username={this.state.username} password={this.state.password}/>
-        }
-        { !this.state.username &&
-          <Login 
-            username={this.state.username}
-            password={this.state.password}
-            updateCredentials={this.updateCredentials}
-          />
-        }
+        <Login 
+          username={this.state.username}
+          password={this.state.password}
+          updateCredentials={this.updateCredentials}
+        />
+        <HairlineDivider />
+        <FlexGrid>
+          <FlexGrid.Row>
+            <FlexGrid.Col lg={3}>
+              <Filter
+              />
+            </FlexGrid.Col>
+            <FlexGrid.Col>
+              <HairlineDivider vertical />
+            </FlexGrid.Col>
+            <FlexGrid.Col lg={9}>
+              { this.state.data &&
+                <Graph
+                  data={this.state.data}
+                />
+              }
+            </FlexGrid.Col>
+          </FlexGrid.Row>
+        </FlexGrid>
       </div>
     );
   }
