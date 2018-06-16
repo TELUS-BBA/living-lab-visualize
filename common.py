@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 import requests
-from getpass import getpass
-import pandas as pd
-import numpy as np
-import matplotlib
-matplotlib.use('svg')
-import matplotlib.pyplot as plt
-import json
+
+
+BASE_URL = "http://localhost:5000"
+NANOPI_URL = "{}/nanopi/".format(BASE_URL)
+IPERF3_URL = "{}/iperf3/".format(BASE_URL)
+JITTER_URL = "{}/jitter/".format(BASE_URL)
+LATENCY_URL = "{}/sockperf/".format(BASE_URL)
+PING_URL = "{}/ping/".format(BASE_URL)
 
 
 def get_from_api(url, auth, params):

@@ -7,23 +7,14 @@ import numpy as np
 import matplotlib
 matplotlib.use('svg')
 import matplotlib.pyplot as plt
-import json
-from common import get_from_api
+import common
 
 
-def get_bandwidth_dataframe(auth=None, params=None):
-
-    base_url = "http://localhost:5000"
-    iperf3_url = "{}/iperf3/".format(base_url)
-
-    if not auth:
-        username = input("API Username: ")
-        password = getpass(prompt="API Password: ")
-        auth = requests.auth.HTTPBasicAuth(username, password)
+def get_bandwidth_dataframe(auth, params=None):
 
     # get list of results from API with given parameters
     print("Getting raw data from API...")
-    results = get_from_api(iperf3_url, auth, params)
+    results = common.get_from_api(common.IPERF3_URL, auth, params)
 
     # put initial multiindex together
     print("Putting initial dataframe together...")
@@ -57,12 +48,32 @@ def get_bandwidth_dataframe(auth=None, params=None):
     return df2
 
 
+def plot_average_bandwidth(df, nanopi_names=None, plot_name='average_bandwidth.svg',
+                           title='Average Bandwidth by Location', chart_width=10):
+    averages = df.loc[:, 'bandwidth'].groupby(['nanopi', 'direction']).mean().unstack()
+    labels = []
+    for nanopi_id in averages.index:
+        labels.append(nanopi_names.get(nanopi_id))
+    ax = averages.plot(kind='bar')
+    ax.set(xlabel='Location', ylabel='Bandwidth (Mbit/s)', title=title)
+    if nanopi_names:
+        ax.set_xticklabels(labels, rotation=0)
+    fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig(plot_name)
+
+
 if __name__ == '__main__':
 
-    df2 = get_bandwidth_dataframe()
+    username = input("API Username: ")
+    password = getpass(prompt="API Password: ")
+    auth = requests.auth.HTTPBasicAuth(username, password)
 
+    nanopis = requests.get(common.NANOPI_URL, auth=auth).json()
+    nanopi_names = {nanopi.get('id'):nanopi.get('location_info') for nanopi in nanopis}
 
-
-
-
-
+    df = get_bandwidth_dataframe(auth)
+    plot_average_bandwidth(df, nanopi_names)
+    df_wo_demetrios = df.loc[(slice(None), [11, 12, 13, 14, 17], slice(None)), :]
+    plot_average_bandwidth(df_wo_demetrios, nanopi_names, plot_name='average_bandwidth_wo_demetrios.svg',
+                           title='Average Bandwidth by Location (without Demetrios)')
