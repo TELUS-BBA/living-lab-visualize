@@ -48,7 +48,7 @@ def get_bandwidth_dataframe(auth, params=None):
 
     # get list of results from API with given parameters
     print("Getting raw data from API...")
-    results = common.get_from_api(common.IPERF3_URL, auth, params)
+    results = get_from_api(IPERF3_URL, auth, params)
 
     # put initial multiindex together
     print("Putting initial dataframe together...")
@@ -86,7 +86,7 @@ def get_jitter_dataframe(auth, params=None):
 
     # get list of results from API with given parameters
     print("Getting raw data from API...")
-    results = common.get_from_api(common.JITTER_URL, auth, params)
+    results = get_from_api(JITTER_URL, auth, params)
 
     # put initial multiindex together
     print("Putting initial dataframe together...")
