@@ -12,6 +12,7 @@ import common
 
 def plot_average_bandwidth(df, nanopi_names=None, plot_name='average_bandwidth.svg',
                            title='Average Bandwidth by Location', chart_width=10):
+    """Produces a bar graph depicting average bandwidth for each nanopi for each direction"""
     averages = df.loc[:, 'bandwidth'].groupby(['nanopi', 'direction']).mean().unstack()
     labels = []
     for nanopi_id in averages.index:
@@ -25,32 +26,42 @@ def plot_average_bandwidth(df, nanopi_names=None, plot_name='average_bandwidth.s
     fig.savefig(plot_name)
 
 
-def plot_24h_average_bandwidth(df, nanopi_names=None, plot_name='24h_average_bandwidth.svg',
-                            title="Average Bandwidth by Hour for All NanoPi's"):
-    """Produces a graph depicting average bandwidth over all nanopis by hour of day for up and another for down"""
-    # up
-    by_hour = df.loc[(slice(None), slice(None), 'up'), 'bandwidth'].groupby(by=(lambda x: x[0].hour)).mean()
+def plot_24h_average_bandwidth(df, plot_name='24h_average_bandwidth.svg',
+                               title="Average Bandwidth by Hour (Aggregate)"):
+    """Produces two graphs depicting average aggregate bandwidth for all nanopis by hour of day, up and down"""
+    by_hour = df.loc[:, 'bandwidth'].unstack().groupby(by=(lambda x: x[0].hour)).mean()
     ax = by_hour.plot()
     ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=title)
     fig = ax.get_figure()
     fig.savefig(plot_name)
-    # down
 
 
 def plot_24h_bandwidth(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
-                    title="Average Bandwidth by Hour", chart_width=10):
-    """Produces a graph showing the average hourly bandwidth for each nanopi"""
-    by_hour = df.loc[:, 'bandwidth'].unstack().groupby(by=(lambda x: x.hour)).mean()
-    labels = []
-    for nanopi_id in by_hour.columns:
-        labels.append(nanopi_names.get(nanopi_id))
-    ax = by_hour.plot()
-    ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=title)
+                       title="Average Bandwidth by Hour (Individual)", chart_width=10):
+    """Produces a graph showing the average hourly bandwidth for each individual nanopi"""
+    by_hour = df.loc[:, 'bandwidth'].unstack().unstack().groupby(by=(lambda x: x.hour)).mean()
+    # up
+    ax = by_hour.loc[:, 'up'].plot()
+    up_title = title + ' (Up)'
+    ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=up_title)
     if nanopi_names:
+        labels = []
+        for nanopi_id in by_hour.columns:
+            labels.append(nanopi_names.get(nanopi_id))
         ax.legend(labels)
     fig = ax.get_figure()
-    fig.set_size_inches(chart_width, 6)
-    fig.savefig(plot_name)
+    fig.savefig('up_' + plot_name)
+    # down
+    ax = by_hour.loc[:, 'down'].plot()
+    down_title = title + ' (Down)'
+    ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=down_title)
+    if nanopi_names:
+        labels = []
+        for nanopi_id in by_hour.columns:
+            labels.append(nanopi_names.get(nanopi_id))
+        ax.legend(labels)
+    fig = ax.get_figure()
+    fig.savefig('down_' + plot_name)
 
 
 if __name__ == '__main__':
@@ -62,8 +73,10 @@ if __name__ == '__main__':
     nanopis = requests.get(common.NANOPI_URL, auth=auth).json()
     nanopi_names = {nanopi.get('id'):nanopi.get('location_info') for nanopi in nanopis}
 
-    df = get_bandwidth_dataframe(auth)
-    plot_average_bandwidth(df, nanopi_names)
+    df = common.get_bandwidth_dataframe(auth)
+#    plot_average_bandwidth(df, nanopi_names)
     df_wo_demetrios = df.loc[(slice(None), [11, 12, 13, 14, 17], slice(None)), :]
-    plot_average_bandwidth(df_wo_demetrios, nanopi_names, plot_name='average_bandwidth_wo_demetrios.svg',
-                           title='Average Bandwidth by Location (without Demetrios)')
+#    plot_average_bandwidth(df_wo_demetrios, nanopi_names, plot_name='average_bandwidth_wo_demetrios.svg',
+#                           title='Average Bandwidth by Location (without Demetrios)')
+    plot_24h_average_bandwidth(df_wo_demetrios, nanopi_names=nanopi_names)
+    plot_24h_bandwidth(df_wo_demetrios, nanopi_names=nanopi_names)
