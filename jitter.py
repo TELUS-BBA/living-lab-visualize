@@ -10,43 +10,6 @@ import matplotlib.pyplot as plt
 import common
 
 
-def get_jitter_dataframe(auth, params=None):
-
-    # get list of results from API with given parameters
-    print("Getting raw data from API...")
-    results = common.get_from_api(common.JITTER_URL, auth, params)
-
-    # put initial multiindex together
-    print("Putting initial dataframe together...")
-    for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert('America/Edmonton')
-    index_tuples = [[x.get('upload_date').floor('H'), x.get('nanopi')] for x in results]
-    index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
-
-    # parse bulk of data
-    df = pd.DataFrame({'id': [x.get('id') for x in results],
-                       'jitter': [x.get('jitter') for x in results],
-                       'upload_date': [x.get('upload_date') for x in results]},
-                      index=index)
-
-    # remove duplicates
-    print("Removing duplicates...")
-    df1 = df.loc[~df.index.duplicated(keep='last'), :]
-
-    # reindex to highlight missing data
-    print("Re-indexing dataframe...")
-    start = df.index.get_level_values('datetime')[0]
-    end = df.index.get_level_values('datetime')[-1]
-    iterables = [
-        pd.date_range(start, end=end, freq='H'),
-        set(df.index.get_level_values('nanopi'))
-    ]
-    new_index = pd.MultiIndex.from_product(iterables, names=['datetime', 'nanopi'])
-    df2 = df1.reindex(index=new_index)
-
-    return df2
-
-
 def plot_average_jitter(df, nanopi_names=None, plot_name='average_jitter.svg',
                         title='Average Jitter by Location', chart_width=10):
     """Produces a graph showing average jitter over entire trial for each nanopi"""
