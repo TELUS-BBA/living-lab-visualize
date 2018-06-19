@@ -55,7 +55,7 @@ def plot_24h_jitter(df, nanopi_names=None, plot_name='24h_jitter.svg',
 
 def plot_dow_average_jitter(df, plot_name='dow_average_jitter.svg',
                             title="Average Jitter by Day of Week (Aggregate)", chart_width=10):
-    """asdf
+    """Produces a graph showing the average aggregated jitter for all nanopis by day of week
 
     A little messed up for the trial because we're missing data for Wednesday.
     """
@@ -71,9 +71,10 @@ def plot_dow_average_jitter(df, plot_name='dow_average_jitter.svg',
 
 def plot_dow_jitter(df, nanopi_names=None, plot_name='dow_jitter.svg',
                     title="Average Jitter by Day of Week (Individual)", chart_width=10):
+    """Produces a graph depicting the average individual jitter for each nanopi by day of week"""
     by_dow = df.loc[:, 'jitter'].unstack().groupby(by=(lambda x: x.dayofweek)).mean().reindex(range(7))
     ax = by_dow.plot()
-    # not sure why the _ is necessary but it makes things work
+    # the _ is not shown because 0th element goes at origin but there is no xtick at origin
     dows = ['_', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     ax.set_xticklabels(dows, rotation=0)
     ax.set(xlabel='Day of Week', ylabel='Jitter (ms)', title=title)
