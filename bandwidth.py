@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import common
 
 
-def plot_average_bandwidth(df, nanopi_names=None, plot_name='average_bandwidth.svg',
+def plot_average(df, nanopi_names=None, plot_name='average_bandwidth.svg',
                            title='Average Bandwidth by Location', chart_width=10):
     """Produces a bar graph depicting average bandwidth for each nanopi for each direction"""
     averages = df.loc[:, 'bandwidth'].groupby(['nanopi', 'direction']).mean().unstack()
@@ -24,9 +24,10 @@ def plot_average_bandwidth(df, nanopi_names=None, plot_name='average_bandwidth.s
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
+    fig.clf()
 
 
-def plot_24h_average_bandwidth(df, plot_name='24h_average_bandwidth.svg',
+def plot_24h_average(df, plot_name='24h_average_bandwidth.svg',
                                title="Average Bandwidth by Hour (Aggregate)"):
     """Produces two graphs depicting average aggregate bandwidth for all nanopis by hour of day, up and down"""
     by_hour = df.loc[:, 'bandwidth'].unstack().groupby(by=(lambda x: x[0].hour)).mean()
@@ -34,9 +35,10 @@ def plot_24h_average_bandwidth(df, plot_name='24h_average_bandwidth.svg',
     ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=title)
     fig = ax.get_figure()
     fig.savefig(plot_name)
+    fig.clf()
 
 
-def plot_24h_bandwidth(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
+def plot_24h(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
                        title="Average Bandwidth by Hour (Individual)", chart_width=10):
     """Produces a graph showing the average hourly bandwidth for each individual nanopi"""
     by_hour = df.loc[:, 'bandwidth'].unstack().unstack().groupby(by=(lambda x: x.hour)).mean()
@@ -51,6 +53,7 @@ def plot_24h_bandwidth(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
         ax.legend(labels)
     fig = ax.get_figure()
     fig.savefig('up_' + plot_name)
+    fig.clf()
     # down
     ax = by_hour.loc[:, 'down'].plot()
     down_title = title + ' (Down)'
@@ -62,6 +65,7 @@ def plot_24h_bandwidth(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
         ax.legend(labels)
     fig = ax.get_figure()
     fig.savefig('down_' + plot_name)
+    fig.clf()
 
 
 if __name__ == '__main__':
@@ -74,9 +78,9 @@ if __name__ == '__main__':
     nanopi_names = {nanopi.get('id'):nanopi.get('location_info') for nanopi in nanopis}
 
     df = common.get_bandwidth_dataframe(auth)
-#    plot_average_bandwidth(df, nanopi_names)
+#    plot_average(df, nanopi_names)
     df_wo_demetrios = df.loc[(slice(None), [11, 12, 13, 14, 17], slice(None)), :]
-#    plot_average_bandwidth(df_wo_demetrios, nanopi_names, plot_name='average_bandwidth_wo_demetrios.svg',
+#    plot_average(df_wo_demetrios, nanopi_names, plot_name='average_bandwidth_wo_demetrios.svg',
 #                           title='Average Bandwidth by Location (without Demetrios)')
-    plot_24h_average_bandwidth(df_wo_demetrios, nanopi_names=nanopi_names)
-    plot_24h_bandwidth(df_wo_demetrios, nanopi_names=nanopi_names)
+    plot_24h_average(df_wo_demetrios, nanopi_names=nanopi_names)
+    plot_24h(df_wo_demetrios, nanopi_names=nanopi_names)

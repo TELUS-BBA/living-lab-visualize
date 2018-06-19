@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import common
 
 
-def plot_average_jitter(df, nanopi_names=None, plot_name='average_jitter.svg',
+def plot_average(df, nanopi_names=None, plot_name='average_jitter.svg',
                         title='Average Jitter by Location', chart_width=10):
     """Produces a graph showing average jitter over entire trial for each nanopi"""
     averages = df.loc[:, 'jitter'].groupby(['nanopi']).mean()
@@ -24,9 +24,10 @@ def plot_average_jitter(df, nanopi_names=None, plot_name='average_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
+    fig.clf()
 
 
-def plot_24h_average_jitter(df, nanopi_names=None, plot_name='24h_average_jitter.svg',
+def plot_24h_average(df, nanopi_names=None, plot_name='24h_average_jitter.svg',
                             title="Average Jitter by Hour (Aggregate)", chart_width=10):
     """Produces a graph depicting average jitter over all nanopis by hour of day"""
     by_hour = df.loc[:, 'jitter'].groupby(by=(lambda x: x[0].hour)).mean()
@@ -35,9 +36,10 @@ def plot_24h_average_jitter(df, nanopi_names=None, plot_name='24h_average_jitter
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
+    fig.clf()
 
 
-def plot_24h_jitter(df, nanopi_names=None, plot_name='24h_jitter.svg',
+def plot_24h(df, nanopi_names=None, plot_name='24h_jitter.svg',
                     title="Average Jitter by Hour (Individual)", chart_width=10):
     """Produces a graph showing the average hourly jitter for each nanopi"""
     by_hour = df.loc[:, 'jitter'].unstack().groupby(by=(lambda x: x.hour)).mean()
@@ -51,9 +53,10 @@ def plot_24h_jitter(df, nanopi_names=None, plot_name='24h_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
+    fig.clf()
 
 
-def plot_dow_average_jitter(df, plot_name='dow_average_jitter.svg',
+def plot_dow_average(df, plot_name='dow_average_jitter.svg',
                             title="Average Jitter by Day of Week (Aggregate)", chart_width=10):
     """Produces a graph showing the average aggregated jitter for all nanopis by day of week
 
@@ -67,9 +70,10 @@ def plot_dow_average_jitter(df, plot_name='dow_average_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
+    fig.clf()
 
 
-def plot_dow_jitter(df, nanopi_names=None, plot_name='dow_jitter.svg',
+def plot_dow(df, nanopi_names=None, plot_name='dow_jitter.svg',
                     title="Average Jitter by Day of Week (Individual)", chart_width=10):
     """Produces a graph depicting the average individual jitter for each nanopi by day of week"""
     by_dow = df.loc[:, 'jitter'].unstack().groupby(by=(lambda x: x.dayofweek)).mean().reindex(range(7))
@@ -86,6 +90,7 @@ def plot_dow_jitter(df, nanopi_names=None, plot_name='dow_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
+    fig.clf()
 
 
 def coverage(df, nanopi_names=None, plot_name='coverage_jitter.svg',
@@ -103,8 +108,8 @@ if __name__ == '__main__':
     nanopi_names = {nanopi.get('id'):nanopi.get('location_info') for nanopi in nanopis}
 
     df = common.get_jitter_dataframe(auth)
-#    plot_average_jitter(df, nanopi_names=nanopi_names)
-#    plot_24h_average_jitter(df)
-#    plot_24h_jitter(df, nanopi_names=nanopi_names)
-    plot_dow_average_jitter(df)
-    plot_dow_jitter(df, nanopi_names=nanopi_names)
+#    plot_average(df, nanopi_names=nanopi_names)
+#    plot_24h_average(df)
+#    plot_24h(df, nanopi_names=nanopi_names)
+    plot_dow_average(df)
+    plot_dow(df, nanopi_names=nanopi_names)
