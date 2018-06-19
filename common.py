@@ -15,8 +15,8 @@ PING_URL = "{}/ping/".format(BASE_URL)
 def get_from_api(url, auth, params):
     """Pages through the REST API and retrieves all the data for a certain set of parameters.
 
-    You can treat this as a regular call to requests.get(...).json();
-    it abstracts the pagination and gives you the same result you'd get without pagination.
+    Very similar to  a regular call to requests.get(...).json(),
+    except that it abstracts the pagination and gives you the same result you'd get without pagination.
     The arguments more or less mirror those for the requests library.
     See http://docs.python-requests.org/en/master/ for more information.
 
@@ -119,3 +119,39 @@ def get_jitter_dataframe(auth, params=None):
     return df2
 
 
+def get_latency_dataframe(auth, params=None):
+
+    # get list of results from API with given parameters
+    print("Getting raw data from API...")
+    results = get_from_api(LATENCY_URL, auth, params)
+
+    # put initial multiindex together
+    print("Putting initial dataframe together...")
+    for result in results:
+        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert('America/Edmonton')
+    index_tuples = [[x.get('upload_date').floor('H'), x.get('nanopi')] for x in results]
+    index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
+
+    # parse bulk of data
+    df = pd.DataFrame({'id': [x.get('id') for x in results],
+                       'latency': [x.get('latency') for x in results],
+                       'upload_date': [x.get('upload_date') for x in results]},
+                      index=index)
+    df.loc[:, 'latency'] = df.loc[:, 'latency']/1000
+
+    # remove duplicates
+    print("Removing duplicates...")
+    df1 = df.loc[~df.index.duplicated(keep='last'), :]
+
+    # reindex to highlight missing data
+    print("Re-indexing dataframe...")
+    start = df.index.get_level_values('datetime')[0]
+    end = df.index.get_level_values('datetime')[-1]
+    iterables = [
+        pd.date_range(start, end=end, freq='H'),
+        set(df.index.get_level_values('nanopi'))
+    ]
+    new_index = pd.MultiIndex.from_product(iterables, names=['datetime', 'nanopi'])
+    df2 = df1.reindex(index=new_index)
+
+    return df2
