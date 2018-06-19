@@ -24,7 +24,7 @@ def plot_average(df, nanopi_names=None, plot_name='average_bandwidth.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def plot_24h_average(df, plot_name='24h_average_bandwidth.svg',
@@ -35,7 +35,7 @@ def plot_24h_average(df, plot_name='24h_average_bandwidth.svg',
     ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=title)
     fig = ax.get_figure()
     fig.savefig(plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def plot_24h(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
@@ -53,7 +53,7 @@ def plot_24h(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
         ax.legend(labels)
     fig = ax.get_figure()
     fig.savefig('up_' + plot_name)
-    fig.clf()
+    fig.clear()
     # down
     ax = by_hour.loc[:, 'down'].plot()
     down_title = title + ' (Down)'
@@ -65,7 +65,7 @@ def plot_24h(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
         ax.legend(labels)
     fig = ax.get_figure()
     fig.savefig('down_' + plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def plot_dow_average(df, plot_name='dow_average_bandwidth.svg',
@@ -79,7 +79,7 @@ def plot_dow_average(df, plot_name='dow_average_bandwidth.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def plot_dow(df, nanopi_names=None, plot_name='dow_bandwidth.svg',
@@ -101,7 +101,7 @@ def plot_dow(df, nanopi_names=None, plot_name='dow_bandwidth.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig('up_' + plot_name)
-    fig.clf()
+    fig.clear()
     # down
     ax = by_dow.loc[:, 'down'].plot()
     ax.set_xticklabels(dows, rotation=0)
@@ -115,8 +115,52 @@ def plot_dow(df, nanopi_names=None, plot_name='dow_bandwidth.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig('down_' + plot_name)
-    fig.clf()
+    fig.clear()
 
+
+def plot_all_average(df, plot_name='all_average_bandwidth.svg',
+                     title="Bandwidth over Entire Trial (Aggregate)", chart_width=10):
+    """Use when you want to plot the average of multiple locations each hour over unlimited time"""
+    averages = df.loc[:, 'bandwidth'].unstack().groupby('datetime').mean()
+    ax = averages.plot()
+    ax.set(xlabel='Date', ylabel='Bandwidth (Mbit/s)', title=title)
+    fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig(plot_name)
+    fig.clear()
+
+
+def plot_all(df, nanopi_names=None, plot_name='all_bandwidth.svg',
+             title="Bandwidth over Entire Trial (Individual)", chart_width=10):
+    """Use when you want to plot the individual data from multiple locations each hour over unlimited time"""
+    # up
+    up_bandwidth = df.loc[:, 'bandwidth'].unstack().unstack().loc[:, 'up']
+    ax = up_bandwidth.plot()
+    up_title = title + ' (Up)'
+    ax.set(xlabel='Date', ylabel='Bandwidth (Mbit/s)', title=up_title)
+    if nanopi_names:
+        labels = []
+        for nanopi_id in up_bandwidth.columns:
+            labels.append(nanopi_names.get(nanopi_id))
+        ax.legend(labels)
+    fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig('up_' + plot_name)
+    fig.clear()
+    # down
+    down_bandwidth = df.loc[:, 'bandwidth'].unstack().unstack().loc[:, 'down']
+    ax = down_bandwidth.plot()
+    down_title = title + ' (Down)'
+    ax.set(xlabel='Date', ylabel='Bandwidth (Mbit/s)', title=down_title)
+    if nanopi_names:
+        labels = []
+        for nanopi_id in down_bandwidth.columns:
+            labels.append(nanopi_names.get(nanopi_id))
+        ax.legend(labels)
+    fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig('down_' + plot_name)
+    fig.clear()
 
 if __name__ == '__main__':
 
@@ -134,6 +178,8 @@ if __name__ == '__main__':
     plot_24h(df, nanopi_names=nanopi_names)
     plot_dow_average(df)
     plot_dow(df, nanopi_names=nanopi_names)
+    plot_all_average(df)
+    plot_all(df, nanopi_names=nanopi_names)
 
 #    df_wo_demetrios = df.loc[(slice(None), [11, 12, 13, 14, 17], slice(None)), :]
 #    plot_average(df_wo_demetrios, nanopi_names, plot_name='average_bandwidth_wo_demetrios.svg',

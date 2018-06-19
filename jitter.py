@@ -24,7 +24,7 @@ def plot_average(df, nanopi_names=None, plot_name='average_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def plot_24h_average(df, nanopi_names=None, plot_name='24h_average_jitter.svg',
@@ -36,7 +36,7 @@ def plot_24h_average(df, nanopi_names=None, plot_name='24h_average_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def plot_24h(df, nanopi_names=None, plot_name='24h_jitter.svg',
@@ -53,7 +53,7 @@ def plot_24h(df, nanopi_names=None, plot_name='24h_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def plot_dow_average(df, plot_name='dow_average_jitter.svg',
@@ -70,7 +70,7 @@ def plot_dow_average(df, plot_name='dow_average_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def plot_dow(df, nanopi_names=None, plot_name='dow_jitter.svg',
@@ -90,7 +90,7 @@ def plot_dow(df, nanopi_names=None, plot_name='dow_jitter.svg',
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
-    fig.clf()
+    fig.clear()
 
 
 def coverage(df, nanopi_names=None, plot_name='coverage_jitter.svg',
