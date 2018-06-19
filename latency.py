@@ -93,6 +93,35 @@ def plot_dow(df, nanopi_names=None, plot_name='dow_latency.svg',
     fig.clear()
 
 
+def plot_all_average(df, plot_name='all_average_latency.svg',
+                     title="Latency over Entire Trial (Aggregate)", chart_width=10):
+    """Use when you want to plot the average of multiple locations each hour over unlimited time"""
+    averages = df.loc[:, 'latency'].groupby('datetime').mean()
+    ax = averages.plot()
+    ax.set(xlabel='Date', ylabel='Latency (ms)', title=title)
+    fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig(plot_name)
+    fig.clear()
+
+
+def plot_all(df, nanopi_names=None, plot_name='all_latency.svg',
+             title="Latency over Entire Trial (Individual)", chart_width=10):
+    """Plots every datapoint for each individual nanopi that you give it"""
+    data = df.loc[:, 'latency'].unstack()
+    ax = data.plot()
+    ax.set(xlabel='Date', ylabel='Latency (ms)', title=title)
+    if nanopi_names:
+        labels = []
+        for nanopi_id in data.columns:
+            labels.append(nanopi_names.get(nanopi_id))
+        ax.legend(labels)
+    fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig(plot_name)
+    fig.clear()
+
+
 def coverage(df, nanopi_names=None, plot_name='coverage_latency.svg',
              title="Coverage of Latency Tests", chart_width=10):
     pass
@@ -113,3 +142,5 @@ if __name__ == '__main__':
     plot_24h(df, nanopi_names=nanopi_names)
     plot_dow_average(df)
     plot_dow(df, nanopi_names=nanopi_names)
+    plot_all_average(df)
+    plot_all(df, nanopi_names=nanopi_names)
