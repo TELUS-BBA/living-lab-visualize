@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('svg')
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import common
 
 
@@ -162,6 +163,49 @@ def plot_all(df, nanopi_names=None, plot_name='all_bandwidth.svg',
     fig.savefig('down_' + plot_name)
     fig.clear()
 
+
+def plot_coverage(df, nanopi_names=None, plot_name='coverage_bandwidth.svg',
+                  title="Bandwidth Test Coverage", chart_width=10):
+    """Produces a plot that depicts which bandwidth tests were missed over the given data"""
+    coverage = df.loc[:, 'bandwidth'].unstack().unstack().fillna(value=False).apply(lambda y: y.apply(lambda x: bool(x)))
+    # up
+    data = []
+    for column_index in range(coverage.loc[:, 'up'].shape[1]):
+        data.append(list(coverage.loc[:, 'up'].iloc[:, column_index]))
+    fig, ax = plt.subplots()
+    ax.imshow(data, aspect='auto', cmap=plt.cm.gray, interpolation='nearest')
+    if nanopi_names:
+        labels = []
+        for nanopi_id in coverage.loc[:, 'up'].columns:
+            labels.append(nanopi_names.get(nanopi_id))
+        ax.set_yticklabels(['_', *labels])
+    ax.set_xticklabels(coverage.loc[:, 'up'].index.date)
+    fig.autofmt_xdate()
+    up_title = title + ' (Up)'
+    ax.set(xlabel='Date', ylabel='Location', title=up_title)
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig('up_' + plot_name)
+    fig.clear()
+    # down
+    data = []
+    for column_index in range(coverage.loc[:, 'down'].shape[1]):
+        data.append(list(coverage.loc[:, 'down'].iloc[:, column_index]))
+    fig, ax = plt.subplots()
+    ax.imshow(data, aspect='auto', cmap=plt.cm.gray, interpolation='nearest')
+    if nanopi_names:
+        labels = []
+        for nanopi_id in coverage.loc[:, 'down'].columns:
+            labels.append(nanopi_names.get(nanopi_id))
+        ax.set_yticklabels(['_', *labels])
+    ax.set_xticklabels(coverage.loc[:, 'down'].index.date)
+    fig.autofmt_xdate()
+    down_title = title + ' (Down)'
+    ax.set(xlabel='Date', ylabel='Location', title=down_title)
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig('down_' + plot_name)
+    fig.clear()
+
+
 if __name__ == '__main__':
 
     username = input("API Username: ")
@@ -180,6 +224,7 @@ if __name__ == '__main__':
     plot_dow(df, nanopi_names=nanopi_names)
     plot_all_average(df)
     plot_all(df, nanopi_names=nanopi_names)
+    plot_coverage(df, nanopi_names=nanopi_names)
 
 #    df_wo_demetrios = df.loc[(slice(None), [11, 12, 13, 14, 17], slice(None)), :]
 #    plot_average(df_wo_demetrios, nanopi_names, plot_name='average_bandwidth_wo_demetrios.svg',

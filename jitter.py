@@ -122,9 +122,26 @@ def plot_all(df, nanopi_names=None, plot_name='all_jitter.svg',
     fig.clear()
 
 
-def coverage(df, nanopi_names=None, plot_name='coverage_jitter.svg',
-             title="Coverage of Jitter Tests", chart_width=10):
-    pass
+def plot_coverage(df, nanopi_names=None, plot_name='coverage_jitter.svg',
+                  title="Coverage of Jitter Tests", chart_width=10):
+    """Produces a plot that depicts which jitter tests were missed over the given data"""
+    coverage = df.loc[:, 'jitter'].unstack().fillna(value=False).apply(lambda y: y.apply(lambda x: bool(x)))
+    data = []
+    for column_index in range(coverage.shape[1]):
+        data.append(list(coverage.iloc[:, column_index]))
+    fig, ax = plt.subplots()
+    ax.imshow(data, aspect='auto', cmap=plt.cm.gray, interpolation='nearest')
+    if nanopi_names:
+        labels = []
+        for nanopi_id in coverage.columns:
+            labels.append(nanopi_names.get(nanopi_id))
+        ax.set_yticklabels(['_', *labels])
+    ax.set_xticklabels(coverage.index.date)
+    fig.autofmt_xdate()
+    ax.set(xlabel='Date', ylabel='Location', title=title)
+    fig.set_size_inches(chart_width, 6)
+    fig.savefig(plot_name)
+    fig.clear()
 
 
 if __name__ == '__main__':
@@ -144,3 +161,4 @@ if __name__ == '__main__':
     plot_dow(df, nanopi_names=nanopi_names)
     plot_all_average(df)
     plot_all(df, nanopi_names=nanopi_names)
+    plot_coverage(df, nanopi_names=nanopi_names)
