@@ -15,12 +15,12 @@ def plot_average(df, nanopi_names=None, plot_name='average_bandwidth.svg',
                  title='Average Bandwidth by Location', chart_width=10):
     """Produces a bar graph depicting average bandwidth for each nanopi for each direction"""
     averages = df.loc[:, 'bandwidth'].groupby(['nanopi', 'direction']).mean().unstack()
-    labels = []
-    for nanopi_id in averages.index:
-        labels.append(nanopi_names.get(nanopi_id))
     ax = averages.plot(kind='bar')
     ax.set(xlabel='Location', ylabel='Bandwidth (Mbit/s)', title=title)
     if nanopi_names:
+        labels = []
+        for nanopi_id in averages.index:
+            labels.append(nanopi_names.get(nanopi_id))
         ax.set_xticklabels(labels, rotation=0)
     fig = ax.get_figure()
     fig.set_size_inches(chart_width, 6)
@@ -216,7 +216,6 @@ if __name__ == '__main__':
     nanopi_names = {nanopi.get('id'):nanopi.get('location_info') for nanopi in nanopis}
 
     df = common.get_bandwidth_dataframe(auth)
-    plot_average(df, nanopi_names=nanopi_names)
     plot_average(df, nanopi_names=nanopi_names)
     plot_24h_average(df)
     plot_24h(df, nanopi_names=nanopi_names)
