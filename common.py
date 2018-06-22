@@ -155,3 +155,49 @@ def get_latency_dataframe(auth, params=None):
     df2 = df1.reindex(index=new_index)
 
     return df2
+
+
+def get_ping_dataframe(auth, params={'state': 'down'}, nanopi_list=None):
+
+    # get list of results from API with given parameters
+    print("Getting raw data from API...")
+    results = get_from_api(PING_URL, auth, params)
+
+    # put initial multiindex together
+    print("Putting initial dataframe together...")
+    for result in results:
+        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert('America/Edmonton')
+        result['time'] = pd.Timestamp(result.get('time')).tz_convert('America/Edmonton')
+    index_tuples = [[x.get('time'), x.get('nanopi')] for x in results]
+    index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
+
+    # parse bulk of data
+    df = pd.DataFrame({'id': [x.get('id') for x in results],
+                       'state': [x.get('state') for x in results],
+                       'upload_date': [x.get('upload_date') for x in results]},
+                      index=index)
+
+    return df
+
+    # remove duplicates
+#    print("Removing duplicates...")
+#    df1 = df.loc[~df.index.duplicated(keep='last'), :]
+
+    # reindex to highlight missing data
+#    print("Re-indexing dataframe...")
+#    start = df.index.get_level_values('datetime')[0]
+#    end = df.index.get_level_values('datetime')[-1]
+#    if not nanopi_list:
+#        iterables = [
+#            pd.date_range(start=start, end=end, freq='2S'),
+#            set(df.index.get_level_values('nanopi'))
+#        ]
+#    else:
+#        iterables = [
+#            pd.date_range(start=start, end=end, freq='2S'),
+#            nanopi_list
+#        ]
+#    new_index = pd.MultiIndex.from_product(iterables, names=['datetime', 'nanopi'])
+#    df2 = df.reindex(index=new_index)
+#
+#    return df2
