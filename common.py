@@ -44,6 +44,12 @@ def get_from_api(url, auth, params):
     return results
 
 
+def get_nanopi_list(auth, params=None):
+    response = requests.get(NANOPI_URL, auth=auth, params=params)
+    response.raise_for_status()
+    return response.json()
+
+
 def get_bandwidth_dataframe(auth, params=None):
 
     # get list of results from API with given parameters
