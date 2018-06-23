@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('svg')
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import common
 
 
@@ -126,6 +127,8 @@ def plot_coverage(df, nanopi_names=None, plot_name='coverage_latency.svg',
              title="Coverage of Latency Tests", chart_width=10):
     """Produces a plot that depicts which latency tests were missed over the given data"""
     coverage = df.loc[:, 'latency'].unstack().fillna(value=False).apply(lambda y: y.apply(lambda x: bool(x)))
+    black_patch = mpatches.Patch(color='black', label='missing')
+    white_patch = mpatches.Patch(color='white', label='present')
     data = []
     for column_index in range(coverage.shape[1]):
         data.append(list(coverage.iloc[:, column_index]))
@@ -139,6 +142,7 @@ def plot_coverage(df, nanopi_names=None, plot_name='coverage_latency.svg',
     ax.set_xticklabels(coverage.index.date)
     fig.autofmt_xdate()
     ax.set(xlabel='Date', ylabel='Location', title=title)
+    ax.legend(handles=[black_patch, white_patch])
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
     fig.clear()

@@ -8,6 +8,7 @@ import matplotlib
 matplotlib.use('svg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.patches as mpatches
 import common
 
 
@@ -168,6 +169,9 @@ def plot_coverage(df, nanopi_names=None, plot_name='coverage_bandwidth.svg',
                   title="Bandwidth Test Coverage", chart_width=10):
     """Produces a plot that depicts which bandwidth tests were missed over the given data"""
     coverage = df.loc[:, 'bandwidth'].unstack().unstack().fillna(value=False).apply(lambda y: y.apply(lambda x: bool(x)))
+    # for legend
+    black_patch = mpatches.Patch(color='black', label='missing')
+    white_patch = mpatches.Patch(color='white', label='present')
     # up
     data = []
     for column_index in range(coverage.loc[:, 'up'].shape[1]):
@@ -183,6 +187,7 @@ def plot_coverage(df, nanopi_names=None, plot_name='coverage_bandwidth.svg',
     fig.autofmt_xdate()
     up_title = title + ' (Up)'
     ax.set(xlabel='Date', ylabel='Location', title=up_title)
+    ax.legend(handles=[black_patch, white_patch])
     fig.set_size_inches(chart_width, 6)
     fig.savefig('up_' + plot_name)
     fig.clear()
@@ -201,6 +206,7 @@ def plot_coverage(df, nanopi_names=None, plot_name='coverage_bandwidth.svg',
     fig.autofmt_xdate()
     down_title = title + ' (Down)'
     ax.set(xlabel='Date', ylabel='Location', title=down_title)
+    ax.legend(handles=[black_patch, white_patch])
     fig.set_size_inches(chart_width, 6)
     fig.savefig('down_' + plot_name)
     fig.clear()
