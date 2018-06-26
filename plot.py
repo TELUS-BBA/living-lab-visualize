@@ -3,6 +3,7 @@
 import os
 import requests
 from getpass import getpass
+import pandas as pd
 
 import common
 import bandwidth
@@ -18,7 +19,8 @@ nanopis = common.get_nanopi_list(auth)
 nanopi_names = {nanopi.get('id'):nanopi.get('location_info') for nanopi in nanopis}
 
 # bandwidth
-df = common.get_bandwidth_dataframe(auth)
+print("Creating plots for bandwidth")
+df = pd.read_hdf('data/bandwidth.h5', 'df')
 bandwidth.plot_average(df, nanopi_names=nanopi_names)
 bandwidth.plot_24h_average(df)
 bandwidth.plot_24h(df, nanopi_names=nanopi_names)
@@ -29,7 +31,8 @@ bandwidth.plot_all(df, nanopi_names=nanopi_names)
 bandwidth.plot_coverage(df, nanopi_names=nanopi_names)
 
 # jitter
-df = common.get_jitter_dataframe(auth)
+print("Creating plots for jitter")
+df = pd.read_hdf('data/jitter.h5', 'df')
 jitter.plot_average(df, nanopi_names=nanopi_names)
 jitter.plot_24h_average(df)
 jitter.plot_24h(df, nanopi_names=nanopi_names)
@@ -40,7 +43,8 @@ jitter.plot_all(df, nanopi_names=nanopi_names)
 jitter.plot_coverage(df, nanopi_names=nanopi_names)
 
 # latency
-df = common.get_latency_dataframe(auth)
+print("Creating plots for latency")
+df = pd.read_hdf('data/latency.h5', 'df')
 latency.plot_average(df, nanopi_names=nanopi_names)
 latency.plot_24h_average(df)
 latency.plot_24h(df, nanopi_names=nanopi_names)
@@ -51,7 +55,8 @@ latency.plot_all(df, nanopi_names=nanopi_names)
 latency.plot_coverage(df, nanopi_names=nanopi_names)
 
 # ping
-df = common.get_ping_dataframe(auth)
+print("Creating plots for ping")
+df = pd.read_hdf('data/ping.h5', 'df')
 ping.plot_down_count(df, nanopi_names=nanopi_names)
 
 

@@ -65,7 +65,7 @@ def plot_dow_average(df, plot_name='dow_average_latency.svg',
     """
     by_dow = df.loc[:, 'latency'].groupby(by=(lambda x: x[0].dayofweek)).mean().reindex(range(7))
     ax = by_dow.plot()
-    dows = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    dows = ['_', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     ax.set_xticklabels(dows, rotation=0)
     ax.set(xlabel='Day of Week', ylabel='Latency (ms)', title=title)
     fig = ax.get_figure()
@@ -139,9 +139,10 @@ def plot_coverage(df, nanopi_names=None, plot_name='coverage_latency.svg',
         for nanopi_id in coverage.columns:
             labels.append(nanopi_names.get(nanopi_id))
         ax.set_yticklabels(['_', *labels])
-    ax.set_xticklabels(coverage.index.date)
-    fig.autofmt_xdate()
-    ax.set(xlabel='Date', ylabel='Location', title=title)
+    #ax.set_xticklabels(coverage.index.date)
+    #fig.autofmt_xdate()
+    #ax.set(xlabel='Date', ylabel='Location', title=title)
+    ax.set(ylabel='Location', title=title)
     ax.legend(handles=[black_patch, white_patch])
     fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)

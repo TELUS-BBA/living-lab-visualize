@@ -7,7 +7,6 @@ import numpy as np
 import matplotlib
 matplotlib.use('svg')
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import matplotlib.patches as mpatches
 import common
 
@@ -30,12 +29,13 @@ def plot_average(df, nanopi_names=None, plot_name='average_bandwidth.svg',
 
 
 def plot_24h_average(df, plot_name='24h_average_bandwidth.svg',
-                     title="Average Bandwidth by Hour (Aggregate)"):
+                     title="Average Bandwidth by Hour (Aggregate)", chart_width=10):
     """Produces two graphs depicting average aggregate bandwidth for all nanopis by hour of day, up and down"""
     by_hour = df.loc[:, 'bandwidth'].unstack().groupby(by=(lambda x: x[0].hour)).mean()
     ax = by_hour.plot()
     ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=title)
     fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
     fig.savefig(plot_name)
     fig.clear()
 
@@ -54,6 +54,7 @@ def plot_24h(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
             labels.append(nanopi_names.get(nanopi_id))
         ax.legend(labels)
     fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
     fig.savefig('up_' + plot_name)
     fig.clear()
     # down
@@ -66,6 +67,7 @@ def plot_24h(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
             labels.append(nanopi_names.get(nanopi_id))
         ax.legend(labels)
     fig = ax.get_figure()
+    fig.set_size_inches(chart_width, 6)
     fig.savefig('down_' + plot_name)
     fig.clear()
 
@@ -75,7 +77,7 @@ def plot_dow_average(df, plot_name='dow_average_bandwidth.svg',
     """Produces a graph showing the average aggregated bandwidth for all nanopis by day of week"""
     by_dow = df.loc[:, 'bandwidth'].unstack().groupby(by=(lambda x: x[0].dayofweek)).mean().reindex(range(7))
     ax = by_dow.plot()
-    dows = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    dows = ['_', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     ax.set_xticklabels(dows, rotation=0)
     ax.set(xlabel='Day of Week', ylabel='Bandwidth (Mbit/s)', title=title)
     fig = ax.get_figure()
@@ -183,10 +185,11 @@ def plot_coverage(df, nanopi_names=None, plot_name='coverage_bandwidth.svg',
         for nanopi_id in coverage.loc[:, 'up'].columns:
             labels.append(nanopi_names.get(nanopi_id))
         ax.set_yticklabels(['_', *labels])
-    ax.set_xticklabels(coverage.loc[:, 'up'].index.date)
-    fig.autofmt_xdate()
+    #ax.set_xticklabels(coverage.loc[:, 'up'].index.date)
+    #fig.autofmt_xdate()
     up_title = title + ' (Up)'
-    ax.set(xlabel='Date', ylabel='Location', title=up_title)
+    #ax.set(xlabel='Date', ylabel='Location', title=up_title)
+    ax.set(ylabel='Location', title=up_title)
     ax.legend(handles=[black_patch, white_patch])
     fig.set_size_inches(chart_width, 6)
     fig.savefig('up_' + plot_name)
@@ -202,10 +205,11 @@ def plot_coverage(df, nanopi_names=None, plot_name='coverage_bandwidth.svg',
         for nanopi_id in coverage.loc[:, 'down'].columns:
             labels.append(nanopi_names.get(nanopi_id))
         ax.set_yticklabels(['_', *labels])
-    ax.set_xticklabels(coverage.loc[:, 'down'].index.date)
-    fig.autofmt_xdate()
+    #ax.set_xticklabels(coverage.loc[:, 'down'].index.date)
+    #fig.autofmt_xdate()
     down_title = title + ' (Down)'
-    ax.set(xlabel='Date', ylabel='Location', title=down_title)
+    #ax.set(xlabel='Date', ylabel='Location', title=down_title)
+    ax.set(ylabel='Location', title=down_title)
     ax.legend(handles=[black_patch, white_patch])
     fig.set_size_inches(chart_width, 6)
     fig.savefig('down_' + plot_name)

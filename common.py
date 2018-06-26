@@ -2,6 +2,8 @@
 
 import requests
 import pandas as pd
+from getpass import getpass
+import os
 
 
 BASE_URL = "http://localhost:5000"
@@ -184,3 +186,20 @@ def get_ping_dataframe(auth, params={'state': 'down'}):
                       index=index)
 
     return df
+
+
+if __name__ == '__main__':
+
+    username = input("API Username: ")
+    password = getpass(prompt="API Password: ")
+    auth = requests.auth.HTTPBasicAuth(username, password)
+
+    try:
+        os.mkdir('data')
+    except OSError:
+        pass
+
+    get_bandwidth_dataframe(auth).to_hdf('data/bandwidth.h5', 'df')
+    get_jitter_dataframe(auth).to_hdf('data/jitter.h5', 'df')
+    get_latency_dataframe(auth).to_hdf('data/latency.h5', 'df')
+    get_ping_dataframe(auth).to_hdf('data/ping.h5', 'df')
