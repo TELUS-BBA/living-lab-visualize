@@ -23,3 +23,8 @@ The typical workflow for creating plots is:
 
 1.  Pass the filtered dataframe into a plotting function, which creates and saves the plot for you
       - get your plotting functions from `bandwidth.py`, `jitter.py`, `latency.py` and `ping.py`
+
+- table depicting types of plots
+- how to select specific (groups of) nanopis
+- how to select by time frame
+- about geting data into local HDF5 format (for slow connections, or for snapshots)
