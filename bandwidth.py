@@ -30,7 +30,7 @@ def plot_average(df, nanopi_names=None, plot_name='average_bandwidth.svg',
 
 def plot_24h_average(df, plot_name='24h_average_bandwidth.svg',
                      title="Average Bandwidth by Hour (Aggregate)", chart_width=10):
-    """Produces two graphs depicting average aggregate bandwidth for all nanopis by hour of day, up and down"""
+    """Produces two graphs, up and down, depicting average aggregate bandwidth for all nanopis by hour of day"""
     by_hour = df.loc[:, 'bandwidth'].unstack().groupby(by=(lambda x: x[0].hour)).mean()
     ax = by_hour.plot()
     ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=title)

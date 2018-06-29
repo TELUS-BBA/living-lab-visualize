@@ -5,10 +5,34 @@ It mainly uses pandas, a python data science library, to do this.
 You can think of pandas as excel on steroids.
 The main object from pandas is a "dataframe", which is equivalent to an excel spreadsheet:
 it has indices, rows and columns.
-Pandas lets us slice, dice, combine and process the data, and then output it to plots.
+Pandas lets us slice, dice, combine and process the data, and then plot it.
 
 
 ## Summary
+
+
+## Installation
+
+Only Linux is supported, although you may have luck running the scripts on other platforms
+if you install a Python data science distribution such as Anaconda.
+To install on Linux:
+
+    git clone https://github.com/adamkpickering/living-lab-visualize.git
+    cd living-lab-visualize
+    sudo pip3 install -r requirements.txt
+
+
+## Usage
+
+Before we get in depth, all you may be looking for is to generate a few plots
+to get an idea of what the data looks like.
+If that's the case, first establish an SSH local tunnel from the API to your machine.
+Then, run:
+
+    ./common.py
+    ./plot.py
+
+Plots will be produced in `data/`.
 
 The typical workflow for creating plots is:
 
@@ -24,26 +48,94 @@ The typical workflow for creating plots is:
     - get your plotting functions from `bandwidth.py`, `jitter.py`, `latency.py` and `ping.py`
       - each file is named according to the type of test it works with
 
-
-## Installation
-
-To be completed.
-
-
-## Usage
-
-- how to select specific (groups of) nanopis
-- how to select by time frame
-- about geting data into local HDF5 format (for slow connections, or for snapshots)
+This usage guide provides basic info, but you may find it lacking.
+Ultimately there is no substitute for reading the pandas documentation
+and example code.
 
 
-## Plot Types
+### Getting Data and Formatting it into Pandas Dataframes
 
-### Average
+You have two options when producing graphs:
+
+1.  Pull the data from the API, format it into a dataframe, then produce plots from it.
+
+1.  Pull the data from the API, format it into a dataframe, and save it into HDF5 format.
+    Then, in a separate script open the HDF5 files and plot from those.
+
+Option 1 is more convenient for small datasets.
+However you may find that this takes too long for large data sets or slow network connections -
+that is when you might consider option 2.
+Option 2 is also good if you want a snapshot of the data as it
+existed at a certain moment in time.
+
+Either way, you must start by running functions in `common.py`.
+Functions that get dataframes from the API are named `get_XX_dataframe(...)`,
+where XX is one of bandwidth, jitter, latency, and ping.
+Once you have the dataframe you may either proceed to the next step (filtering), or save it to HDF5.
+See [this guide](https://pandas.pydata.org/pandas-docs/stable/io.html#io-hdf5)
+for help with reading and writing pandas dataframes to and from HDF5.
+You can reference (or even use outright) `plot.py` for examples.
+There are also examples in the `if __name__ == '__main__'` sections
+of `bandwidth.py`, `jitter.py`, `latency.py`, and `ping.py`.
+
+#### URL Parameters
+You may want to filter your API query with URL parameters.
+If this is the case, simply browse to the API and click on "Filters",
+which will let you learn about which URL parameters do what.
+
+#### Changing Variables in common.py
+You may have to change the values of the global variables `BASE_URL` and `TIMEZONE` in `common.py`.
+`BASE_URL` is the base URL of the API, and `TIMEZONE` is the timezone that
+the NanoPis were in for testing.
+
+
+### Filtering Pandas Dataframes
+
+When making plots you may want to filter or reduce your dataframe in some way.
+The plotting functions take care of most of this, but I can think of
+two ways you may want to pre-process your data:
+
+1.  **By NanoPi:** To filter your dataframe by NanoPi, run the following command:
+
+        df1 = df.loc[(slice(None), [11, 12, 13], slice(None)), :]
+
+    Where `[11, 12, 13]` is a list of NanoPi IDs that you want in the new dataframe,
+    and `df1` is the new dataframe.
+
+1.  **By Date:** Limiting the dataframe by date is similar to the above.
+    If I want to limit my dataframe to all the data between the dates 2018-05-30
+    and 2018-05-31 I can use the command:
+
+        df1 = df.loc[(slice('2018-05-30', '2018-05-31'), slice(None), slice(None)), :]
+
+    I can also get greater granularity. If I want the data between 2018-05-30 at 
+    22:30:00 and 2018-05-31 at 19:00:00 I can use the command:
+    
+        df1 = df.loc[(slice('2018-05-30 22:30:00', '2018-05-31 19:00:00'), slice(None), slice(None)), :]
+
+It is impossible for me to anticipate all of your filtering needs.
+If these pointers don't help, your best resource will be to learn about pandas.
+A good place to start is [here](http://pandas.pydata.org/pandas-docs/stable/10min.html).
+Remember: you are limited in the operations you may do on dataframes
+if you want to use the plotting functions.
+These functions expect the dataframe to have the same type of index,
+and the same columns and column names as the ones produced by the
+`get_XX_dataframe(...)` functions.
+
+
+### Plot Types
+
+Once you have the dataframe you want to plot, you can pass it to any of the plotting functions in 
+`bandwidth.py`, `jitter.py`, `latency.py`, and `ping.py`.
+I have included a summary of plot types here, but you can also
+look at the function docstrings for explanations of what they do
+and how to call them.
+
+#### Average
 Average plots are intended to show the average values of each NanoPi in the passed dataframe
 over the entire time covered by the dataframe.
 
-### Hour of Day
+#### Hour of Day
 Hour of Day plots are intended to show any relationships the data has to what time of day
 it was collected. There are two types of Hour of Day plots: **individual** and **aggregate**.
 Individual plots plot the data for each NanoPi in the passed dataframe 
@@ -51,13 +143,13 @@ as a separate series so that you can compare the data collected by different Nan
 Aggregate plots plot the average of all the NanoPis in the passed dataframe,
 so that you can aggregate data from multiple NanoPis into a single series.
 
-### Day of Week
+#### Day of Week
 Day of Week plots are equivalent to Hour of Day plots,
 except that they are meant to show relationships between collected data and
 the day of the week that data was collected on.
 Once again, there are two types of Day of Week plots: **individual** and **aggregate**.
 
-### Coverage
+#### Coverage
 Coverage plots help you visualize missing data.
 If data was missing, that shows up as a black patch;
 white patches represent data that was present.
