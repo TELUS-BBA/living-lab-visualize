@@ -6,12 +6,15 @@ from getpass import getpass
 import os
 
 
+# BASE_URL is the base API URL
 BASE_URL = "http://localhost:5000"
 NANOPI_URL = "{}/nanopi/".format(BASE_URL)
 IPERF3_URL = "{}/iperf3/".format(BASE_URL)
 JITTER_URL = "{}/jitter/".format(BASE_URL)
 LATENCY_URL = "{}/sockperf/".format(BASE_URL)
 PING_URL = "{}/ping/".format(BASE_URL)
+
+TIMEZONE = 'America/Edmonton'
 
 
 def get_from_api(url, auth, params):
@@ -61,7 +64,7 @@ def get_bandwidth_dataframe(auth, params=None):
     # put initial multiindex together
     print("Putting initial dataframe together...")
     for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert('America/Edmonton')
+        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert(TIMEZONE)
     index_tuples = [[x.get('upload_date').floor('H'), x.get('nanopi'), x.get('direction')] for x in results]
     index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi', 'direction'])
 
@@ -99,7 +102,7 @@ def get_jitter_dataframe(auth, params=None):
     # put initial multiindex together
     print("Putting initial dataframe together...")
     for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert('America/Edmonton')
+        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert(TIMEZONE)
     index_tuples = [[x.get('upload_date').floor('H'), x.get('nanopi')] for x in results]
     index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
 
@@ -136,7 +139,7 @@ def get_latency_dataframe(auth, params=None):
     # put initial multiindex together
     print("Putting initial dataframe together...")
     for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert('America/Edmonton')
+        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert(TIMEZONE)
     index_tuples = [[x.get('upload_date').floor('H'), x.get('nanopi')] for x in results]
     index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
 
@@ -174,8 +177,8 @@ def get_ping_dataframe(auth, params={'state': 'down'}):
     # put initial multiindex together
     print("Putting initial dataframe together...")
     for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert('America/Edmonton')
-        result['time'] = pd.Timestamp(result.get('time')).tz_convert('America/Edmonton')
+        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert(TIMEZONE)
+        result['time'] = pd.Timestamp(result.get('time')).tz_convert(TIMEZONE)
     index_tuples = [[x.get('time'), x.get('nanopi')] for x in results]
     index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
 
