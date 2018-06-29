@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Contains plotting functions related to latency test results.
+
 import requests
 from getpass import getpass
 import pandas as pd
@@ -12,8 +14,16 @@ import common
 
 
 def plot_average(df, nanopi_names=None, plot_name='average_latency.svg',
-                        title='Average Latency by Location', chart_width=10):
-    """Produces a graph showing average latency over entire trial for each nanopi"""
+                 title='Average Latency by Location', chart_width=10):
+    """Produces a graph showing average latency over entire trial for each nanopi
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the produced plot
+    """
     averages = df.loc[:, 'latency'].groupby(['nanopi']).mean()
     ax = averages.plot(kind='bar')
     ax.set(xlabel='Location', ylabel='Latency (ms)', title=title)
@@ -29,8 +39,16 @@ def plot_average(df, nanopi_names=None, plot_name='average_latency.svg',
 
 
 def plot_24h_average(df, nanopi_names=None, plot_name='24h_average_latency.svg',
-                            title="Average Latency by Hour (Aggregate)", chart_width=10):
-    """Produces a graph depicting average latency over all nanopis by hour of day"""
+                     title="Average Latency by Hour (Aggregate)", chart_width=10):
+    """Produces a graph depicting average latency over all nanopis by hour of day
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the produced plot
+    """
     by_hour = df.loc[:, 'latency'].groupby(by=(lambda x: x[0].hour)).mean()
     ax = by_hour.plot()
     ax.set(xlabel='Hour of Day', ylabel='Latency (ms)', title=title)
@@ -41,8 +59,16 @@ def plot_24h_average(df, nanopi_names=None, plot_name='24h_average_latency.svg',
 
 
 def plot_24h(df, nanopi_names=None, plot_name='24h_latency.svg',
-                    title="Average Latency by Hour (Individual)", chart_width=10):
-    """Produces a graph showing the average hourly latency for each nanopi"""
+             title="Average Latency by Hour (Individual)", chart_width=10):
+    """Produces a graph showing the average hourly latency for each nanopi
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the produced plot
+    """
     by_hour = df.loc[:, 'latency'].unstack().groupby(by=(lambda x: x.hour)).mean()
     ax = by_hour.plot()
     ax.set(xlabel='Hour of Day', ylabel='Latency (ms)', title=title)
@@ -58,10 +84,14 @@ def plot_24h(df, nanopi_names=None, plot_name='24h_latency.svg',
 
 
 def plot_dow_average(df, plot_name='dow_average_latency.svg',
-                            title="Average Latency by Day of Week (Aggregate)", chart_width=10):
+                     title="Average Latency by Day of Week (Aggregate)", chart_width=10):
     """Produces a graph showing the average aggregated latency for all nanopis by day of week
 
-    A little messed up for the trial because we're missing data for Wednesday.
+    Arguments:
+    df - the pandas dataframe used as a data source
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the produced plot
     """
     by_dow = df.loc[:, 'latency'].groupby(by=(lambda x: x[0].dayofweek)).mean().reindex(range(7))
     ax = by_dow.plot()
@@ -75,8 +105,16 @@ def plot_dow_average(df, plot_name='dow_average_latency.svg',
 
 
 def plot_dow(df, nanopi_names=None, plot_name='dow_latency.svg',
-                    title="Average Latency by Day of Week (Individual)", chart_width=10):
-    """Produces a graph depicting the average individual latency for each nanopi by day of week"""
+             title="Average Latency by Day of Week (Individual)", chart_width=10):
+    """Produces a graph depicting the average individual latency for each nanopi by day of week
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the produced plot
+    """
     by_dow = df.loc[:, 'latency'].unstack().groupby(by=(lambda x: x.dayofweek)).mean().reindex(range(7))
     ax = by_dow.plot()
     # the _ is not shown because 0th element goes at origin but there is no xtick at origin
@@ -96,7 +134,14 @@ def plot_dow(df, nanopi_names=None, plot_name='dow_latency.svg',
 
 def plot_all_average(df, plot_name='all_average_latency.svg',
                      title="Latency over Entire Trial (Aggregate)", chart_width=10):
-    """Use when you want to plot the average of multiple locations each hour over unlimited time"""
+    """Use when you want to plot the average of multiple locations each hour over unlimited time
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the produced plot
+    """
     averages = df.loc[:, 'latency'].groupby('datetime').mean()
     ax = averages.plot()
     ax.set(xlabel='Date', ylabel='Latency (ms)', title=title)
@@ -108,7 +153,15 @@ def plot_all_average(df, plot_name='all_average_latency.svg',
 
 def plot_all(df, nanopi_names=None, plot_name='all_latency.svg',
              title="Latency over Entire Trial (Individual)", chart_width=10):
-    """Plots every datapoint for each individual nanopi that you give it"""
+    """Plots every datapoint for each individual nanopi that you give it
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the produced plot
+    """
     data = df.loc[:, 'latency'].unstack()
     ax = data.plot()
     ax.set(xlabel='Date', ylabel='Latency (ms)', title=title)
@@ -125,7 +178,15 @@ def plot_all(df, nanopi_names=None, plot_name='all_latency.svg',
 
 def plot_coverage(df, nanopi_names=None, plot_name='coverage_latency.svg',
              title="Coverage of Latency Tests", chart_width=10):
-    """Produces a plot that depicts which latency tests were missed over the given data"""
+    """Produces a plot that depicts which latency tests were missed over the given data
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the produced plot
+    """
     coverage = df.loc[:, 'latency'].unstack().fillna(value=False).apply(lambda y: y.apply(lambda x: bool(x)))
     black_patch = mpatches.Patch(color='black', label='missing')
     white_patch = mpatches.Patch(color='white', label='present')

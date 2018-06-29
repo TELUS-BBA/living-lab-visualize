@@ -28,7 +28,7 @@ def get_from_api(url, auth, params):
     Arguments:
     url - the url that will be requested
     auth - the requests auth object; see requests docs
-    params - a dict containing URL parameters for the request; see requests docs
+    params - a dict containing URL parameters for API requests; see requests docs
     """
     results = []
     response = requests.get(url, auth=auth, params=params)
@@ -50,13 +50,26 @@ def get_from_api(url, auth, params):
 
 
 def get_nanopi_list(auth, params=None):
+    """Gets a list of all NanoPis from the API.
+
+    Assumes no pagination.
+
+    Arguments:
+    auth - the requests auth object; see requests docs
+    params - a dict containing URL parameters for the request; see requests docs
+    """
     response = requests.get(NANOPI_URL, auth=auth, params=params)
     response.raise_for_status()
     return response.json()
 
 
 def get_bandwidth_dataframe(auth, params=None):
+    """Gets bandwidth data from the API and formats it as a pandas dataframe.
 
+    Arguments:
+    auth - the requests auth object; see requests docs
+    params - a dict containing URL parameters for API requests; see requests docs
+    """
     # get list of results from API with given parameters
     print("Getting raw data from API...")
     results = get_from_api(IPERF3_URL, auth, params)
@@ -94,7 +107,12 @@ def get_bandwidth_dataframe(auth, params=None):
 
 
 def get_jitter_dataframe(auth, params=None):
+    """Gets jitter data from the API and formats it as a pandas dataframe.
 
+    Arguments:
+    auth - the requests auth object; see requests docs
+    params - a dict containing URL parameters for API requests; see requests docs
+    """
     # get list of results from API with given parameters
     print("Getting raw data from API...")
     results = get_from_api(JITTER_URL, auth, params)
@@ -131,6 +149,12 @@ def get_jitter_dataframe(auth, params=None):
 
 
 def get_latency_dataframe(auth, params=None):
+    """Gets latency data from the API and formats it as a pandas dataframe.
+
+    Arguments:
+    auth - the requests auth object; see requests docs
+    params - a dict containing URL parameters for API requests; see requests docs
+    """
 
     # get list of results from API with given parameters
     print("Getting raw data from API...")
@@ -169,6 +193,12 @@ def get_latency_dataframe(auth, params=None):
 
 
 def get_ping_dataframe(auth, params={'state': 'down'}):
+    """Gets ping data from the API and formats it as a pandas dataframe.
+
+    Arguments:
+    auth - the requests auth object; see requests docs
+    params - a dict containing URL parameters for API requests; see requests docs
+    """
 
     # get list of results from API with given parameters
     print("Getting raw data from API...")

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# This file contains example scripts.
+# The idea is that you read them as examples while creating your own plots.
+
 import os
 import requests
 from getpass import getpass

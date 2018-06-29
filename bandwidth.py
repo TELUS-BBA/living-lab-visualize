@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Contains plotting functions related to bandwidth test results.
+
 import requests
 from getpass import getpass
 import pandas as pd
@@ -13,7 +15,15 @@ import common
 
 def plot_average(df, nanopi_names=None, plot_name='average_bandwidth.svg',
                  title='Average Bandwidth by Location', chart_width=10):
-    """Produces a bar graph depicting average bandwidth for each nanopi for each direction"""
+    """Produces a bar graph depicting average upload bandwidth and average download bandwidth for each nanopi.
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the chart
+    """
     averages = df.loc[:, 'bandwidth'].groupby(['nanopi', 'direction']).mean().unstack()
     ax = averages.plot(kind='bar')
     ax.set(xlabel='Location', ylabel='Bandwidth (Mbit/s)', title=title)
@@ -30,7 +40,14 @@ def plot_average(df, nanopi_names=None, plot_name='average_bandwidth.svg',
 
 def plot_24h_average(df, plot_name='24h_average_bandwidth.svg',
                      title="Average Bandwidth by Hour (Aggregate)", chart_width=10):
-    """Produces two graphs, up and down, depicting average aggregate bandwidth for all nanopis by hour of day"""
+    """Produces two graphs, up and down, depicting average aggregate bandwidth for all NanoPis by hour of day.
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the chart
+    """
     by_hour = df.loc[:, 'bandwidth'].unstack().groupby(by=(lambda x: x[0].hour)).mean()
     ax = by_hour.plot()
     ax.set(xlabel='Hour of Day', ylabel='Bandwidth (Mbit/s)', title=title)
@@ -42,7 +59,15 @@ def plot_24h_average(df, plot_name='24h_average_bandwidth.svg',
 
 def plot_24h(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
              title="Average Bandwidth by Hour (Individual)", chart_width=10):
-    """Produces a graph showing the average hourly bandwidth for each individual nanopi"""
+    """Produces a graph showing the average hourly bandwidth for each individual nanopi
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the chart
+    """
     by_hour = df.loc[:, 'bandwidth'].unstack().unstack().groupby(by=(lambda x: x.hour)).mean()
     # up
     ax = by_hour.loc[:, 'up'].plot()
@@ -74,7 +99,14 @@ def plot_24h(df, nanopi_names=None, plot_name='24h_bandwidth.svg',
 
 def plot_dow_average(df, plot_name='dow_average_bandwidth.svg',
                      title="Average Bandwidth by Day of Week (Aggregate)", chart_width=10):
-    """Produces a graph showing the average aggregated bandwidth for all nanopis by day of week"""
+    """Produces a graph showing the average aggregated bandwidth for all nanopis by day of week
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the chart
+    """
     by_dow = df.loc[:, 'bandwidth'].unstack().groupby(by=(lambda x: x[0].dayofweek)).mean().reindex(range(7))
     ax = by_dow.plot()
     dows = ['_', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -88,7 +120,15 @@ def plot_dow_average(df, plot_name='dow_average_bandwidth.svg',
 
 def plot_dow(df, nanopi_names=None, plot_name='dow_bandwidth.svg',
              title="Average Bandwidth by Day of Week (Individual)", chart_width=10):
-    """Produces a graph depicting the average individual bandwidth for each nanopi by day of week"""
+    """Produces a graph depicting the average individual bandwidth for each nanopi by day of week
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the chart
+    """
     by_dow = df.loc[:, 'bandwidth'].unstack().unstack().groupby(by=(lambda x: x.dayofweek)).mean()
     # the _ is not shown because 0th element goes at origin but there is no xtick at origin
     dows = ['_', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -124,7 +164,15 @@ def plot_dow(df, nanopi_names=None, plot_name='dow_bandwidth.svg',
 
 def plot_all_average(df, plot_name='all_average_bandwidth.svg',
                      title="Bandwidth over Entire Trial (Aggregate)", chart_width=10):
-    """Use when you want to plot the average of multiple locations each hour over unlimited time"""
+    """Use when you want to plot the average of multiple locations each hour over unlimited time
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the chart
+    """
     averages = df.loc[:, 'bandwidth'].unstack().groupby('datetime').mean()
     ax = averages.plot()
     ax.set(xlabel='Date', ylabel='Bandwidth (Mbit/s)', title=title)
@@ -136,7 +184,15 @@ def plot_all_average(df, plot_name='all_average_bandwidth.svg',
 
 def plot_all(df, nanopi_names=None, plot_name='all_bandwidth.svg',
              title="Bandwidth over Entire Trial (Individual)", chart_width=10):
-    """Use when you want to plot the individual data from multiple locations each hour over unlimited time"""
+    """Use when you want to plot the individual data from multiple locations each hour over unlimited time
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the chart
+    """
     # up
     up_bandwidth = df.loc[:, 'bandwidth'].unstack().unstack().loc[:, 'up']
     ax = up_bandwidth.plot()
@@ -169,7 +225,15 @@ def plot_all(df, nanopi_names=None, plot_name='all_bandwidth.svg',
 
 def plot_coverage(df, nanopi_names=None, plot_name='coverage_bandwidth.svg',
                   title="Bandwidth Test Coverage", chart_width=10):
-    """Produces a plot that depicts which bandwidth tests were missed over the given data"""
+    """Produces two plots, up and down, that depict which bandwidth tests were missed over the given data
+
+    Arguments:
+    df - the pandas dataframe used as a data source
+    nanopi_names - a dict where the keys are nanopi IDs and the values are the names you want on the plot
+    plot_name - the file name of the plot that is produced by this function
+    title - a string that will become the title of the produced plot
+    chart_width - the width of the chart
+    """
     coverage = df.loc[:, 'bandwidth'].unstack().unstack().fillna(value=False).apply(lambda y: y.apply(lambda x: bool(x)))
     # for legend
     black_patch = mpatches.Patch(color='black', label='missing')

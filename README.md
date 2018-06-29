@@ -8,13 +8,11 @@ it has indices, rows and columns.
 Pandas lets us slice, dice, combine and process the data, and then plot it.
 
 
-## Summary
-
-
 ## Installation
 
 Only Linux is supported, although you may have luck running the scripts on other platforms
 if you install a Python data science distribution such as Anaconda.
+You should also be on some version of Python 3 (it is confirmed to work on python 3.5.2).
 To install on Linux:
 
     git clone https://github.com/adamkpickering/living-lab-visualize.git
@@ -32,11 +30,13 @@ Then, run:
     ./common.py
     ./plot.py
 
-Plots will be produced in `data/`.
+Plots will be produced in the current directory.
+But you can get more out of this if you take some time to learn about it and understand it.
+If that is the case, read on.
 
 The typical workflow for creating plots is:
 
-1.  Get data from API, and put it into a pandas dataframe
+1.  Get data from API, and format it into a pandas dataframe
     - alternatively you may want to download the data and then work off of a local
       copy - more on this later
     - functions for this are located in `common.py`
@@ -49,8 +49,7 @@ The typical workflow for creating plots is:
       - each file is named according to the type of test it works with
 
 This usage guide provides basic info, but you may find it lacking.
-Ultimately there is no substitute for reading the pandas documentation
-and example code.
+Ultimately there is no substitute for reading the pandas documentation and example code.
 
 
 ### Getting Data and Formatting it into Pandas Dataframes
@@ -63,9 +62,9 @@ You have two options when producing graphs:
     Then, in a separate script open the HDF5 files and plot from those.
 
 Option 1 is more convenient for small datasets.
-However you may find that this takes too long for large data sets or slow network connections -
-that is when you might consider option 2.
-Option 2 is also good if you want a snapshot of the data as it
+However you may find that this takes too long for large data sets
+or slow network connections - that is when you might consider option 2.
+Option 2 is also good if you want to save a snapshot of the data as it
 existed at a certain moment in time.
 
 Either way, you must start by running functions in `common.py`.
@@ -91,25 +90,24 @@ the NanoPis were in for testing.
 
 ### Filtering Pandas Dataframes
 
-When making plots you may want to filter or reduce your dataframe in some way.
-The plotting functions take care of most of this, but I can think of
-two ways you may want to pre-process your data:
+When making plots you may want to filter or slice your dataframe in some way.
+There are two ways I can think of that might be useful:
 
 1.  **By NanoPi:** To filter your dataframe by NanoPi, run the following command:
 
         df1 = df.loc[(slice(None), [11, 12, 13], slice(None)), :]
 
-    Where `[11, 12, 13]` is a list of NanoPi IDs that you want in the new dataframe,
-    and `df1` is the new dataframe.
+    Where `[11, 12, 13]` is a list of NanoPi IDs that you want
+    to remain in the new dataframe, and `df1` is the new dataframe.
 
 1.  **By Date:** Limiting the dataframe by date is similar to the above.
-    If I want to limit my dataframe to all the data between the dates 2018-05-30
-    and 2018-05-31 I can use the command:
+    If we want to limit my dataframe to all the data between the dates 2018-05-30
+    and 2018-05-31 we can use the command:
 
         df1 = df.loc[(slice('2018-05-30', '2018-05-31'), slice(None), slice(None)), :]
 
-    I can also get greater granularity. If I want the data between 2018-05-30 at 
-    22:30:00 and 2018-05-31 at 19:00:00 I can use the command:
+    We can get greater granularity. If we want the data from 2018-05-30 at 22:30:00
+    to 2018-05-31 at 19:00:00 we can use the command:
     
         df1 = df.loc[(slice('2018-05-30 22:30:00', '2018-05-31 19:00:00'), slice(None), slice(None)), :]
 
@@ -119,7 +117,7 @@ A good place to start is [here](http://pandas.pydata.org/pandas-docs/stable/10mi
 Remember: you are limited in the operations you may do on dataframes
 if you want to use the plotting functions.
 These functions expect the dataframe to have the same type of index,
-and the same columns and column names as the ones produced by the
+and the same columns and column names as the ones originally produced by the
 `get_XX_dataframe(...)` functions.
 
 
@@ -132,13 +130,13 @@ look at the function docstrings for explanations of what they do
 and how to call them.
 
 #### Average
-Average plots are intended to show the average values of each NanoPi in the passed dataframe
+Average plots are intended to show the average values of each NanoPi in the dataframe
 over the entire time covered by the dataframe.
 
 #### Hour of Day
 Hour of Day plots are intended to show any relationships the data has to what time of day
 it was collected. There are two types of Hour of Day plots: **individual** and **aggregate**.
-Individual plots plot the data for each NanoPi in the passed dataframe 
+Individual plots plot the data for each NanoPi in the dataframe 
 as a separate series so that you can compare the data collected by different NanoPis.
 Aggregate plots plot the average of all the NanoPis in the passed dataframe,
 so that you can aggregate data from multiple NanoPis into a single series.
@@ -148,10 +146,10 @@ Day of Week plots are equivalent to Hour of Day plots,
 except that they are meant to show relationships between collected data and
 the day of the week that data was collected on.
 Once again, there are two types of Day of Week plots: **individual** and **aggregate**.
+The same explanations apply.
 
 #### Coverage
-Coverage plots help you visualize missing data.
-If data was missing, that shows up as a black patch;
-white patches represent data that was present.
+Coverage plots are a visual representation of which data points are present and which are missing.
+If data is missing, it shows up as a black patch; white patches represent data that is present.
 You might use coverage plots to get an idea of the quality of your data set,
 or to see if there are any bugs that are causing tests to be missed.
