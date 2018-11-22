@@ -77,7 +77,7 @@ def get_bandwidth_dataframe(auth, params=None):
     # put initial multiindex together
     print("Putting initial dataframe together...")
     for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert(TIMEZONE)
+        result['upload_date'] = pd.Timestamp(result.get('upload_date'))
     index_tuples = [[x.get('upload_date').floor('H'), x.get('nanopi'), x.get('direction')] for x in results]
     index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi', 'direction'])
 
@@ -120,7 +120,7 @@ def get_jitter_dataframe(auth, params=None):
     # put initial multiindex together
     print("Putting initial dataframe together...")
     for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert(TIMEZONE)
+        result['upload_date'] = pd.Timestamp(result.get('upload_date'))
     index_tuples = [[x.get('upload_date').floor('H'), x.get('nanopi')] for x in results]
     index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
 
@@ -163,7 +163,7 @@ def get_latency_dataframe(auth, params=None):
     # put initial multiindex together
     print("Putting initial dataframe together...")
     for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert(TIMEZONE)
+        result['upload_date'] = pd.Timestamp(result.get('upload_date'))
     index_tuples = [[x.get('upload_date').floor('H'), x.get('nanopi')] for x in results]
     index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
 
@@ -207,7 +207,7 @@ def get_ping_dataframe(auth, params={'state': 'down'}):
     # put initial multiindex together
     print("Putting initial dataframe together...")
     for result in results:
-        result['upload_date'] = pd.Timestamp(result.get('upload_date')).tz_convert(TIMEZONE)
+        result['upload_date'] = pd.Timestamp(result.get('upload_date'))
         result['time'] = pd.Timestamp(result.get('time')).tz_convert(TIMEZONE)
     index_tuples = [[x.get('time'), x.get('nanopi')] for x in results]
     index = pd.MultiIndex.from_tuples(index_tuples, names=['datetime', 'nanopi'])
